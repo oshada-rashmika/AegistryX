@@ -1,0 +1,33 @@
+name: Aegistryx Runner Verification Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - test-runner
+
+permissions:
+  contents: read
+
+jobs:
+  runner-test:
+    name: Runner Smoke Test
+    runs-on: ubuntu-latest
+
+    steps:
+      #Step 1: Check out repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      #Step 2: Set up Python 3.10 runtime
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      #Step 3: Run hello_world verification script with dummy environment variable
+      - name: Execute Hello World Runner Test
+        env:
+          TEST_VAR: "Aegistryx_Runner_Active"
+        run: |
+          python scripts/hello_world.py
