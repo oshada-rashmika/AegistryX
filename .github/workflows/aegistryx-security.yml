@@ -61,7 +61,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          cache: 'pip'
 
       #Step 2.3: Generate Software Bill of Materials (SBOM) in SPDX JSON format
       - name: Generate SBOM (SPDX JSON via Trivy)
@@ -114,7 +113,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          cache: 'pip'
 
       #Step 3.3: Run fine-tuned local LLM code reasoning and cognitive vulnerability check
       - name: Run LLM Security Analysis (scripts/llm_analyze.py)
