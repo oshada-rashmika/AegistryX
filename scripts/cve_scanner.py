@@ -20,8 +20,11 @@ def parse_args():
         description="Scan SPDX SBOM packages for CVEs via OSV.dev API."
     )
     parser.add_argument(
+        "--file",
         "--sbom",
+        "-f",
         "-s",
+        dest="file",
         default="./sbom.spdx.json",
         help="path to spdx json file (default: ./sbom.spdx.json)",
     )
@@ -133,7 +136,7 @@ def main():
         os.system("")
 
     args = parse_args()
-    target_file = args.positional_path or args.sbom
+    target_file = args.positional_path or args.file
 
     compliant = scan_sbom(target_file)
     if not compliant:

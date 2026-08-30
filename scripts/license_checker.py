@@ -28,8 +28,11 @@ def parse_args():
         description="Verify license compliance from an SPDX JSON SBOM."
     )
     parser.add_argument(
+        "--file",
         "--sbom",
+        "-f",
         "-s",
+        dest="file",
         default="./sbom.spdx.json",
         help="path to spdx json file (default: ./sbom.spdx.json)",
     )
@@ -143,7 +146,7 @@ def main():
         os.system("")
 
     args = parse_args()
-    target_file = args.positional_path or args.sbom
+    target_file = args.positional_path or args.file
     banned_licenses = get_banned_licenses(args.prohibited)
 
     compliant = check_licenses(target_file, banned_licenses)

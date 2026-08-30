@@ -1,0 +1,54 @@
+name: Aegistryx Security Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  security-pipeline:
+    name: Aegistryx Security Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Syft
+        run: |
+          # install syft binary globally
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sudo sh -s -- -b /usr/local/bin
+
+      - name: Generate SBOM
+        run: |
+          # generate spdx json sbom
+          syft . -o spdx-json=sbom.spdx.json
+
+      - name: Run License Scan
+        run: |
+          # scan licenses for policy compliance
+          python scripts/license_checker.py --file sbom.spdx.json
+
+      - name: Run CVE Scan
+        run: |
+          # scan dependencies for known vulnerabilities
+          python scripts/cve_scanner.py --file sbom.spdx.json
+
+      - name: Archive SBOM
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aegistryx-sbom-artifact
+          path: sbom.spdx.json
+          retention-days: 14
