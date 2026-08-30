@@ -1,0 +1,41 @@
+name: Aegistryx SBOM
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-sbom:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Syft
+        run: |
+          # install syft binary to system path
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sudo sh -s -- -b /usr/local/bin
+
+      - name: Verify installation
+        run: |
+          # log syft version for troubleshooting
+          syft --version
+
+      - name: Scan repository and output SPDX JSON
+        run: |
+          # generate spdx json sbom for repository root
+          syft . -o spdx-json=sbom.spdx.json
+
+      - name: Archive SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aegistryx-sbom
+          path: sbom.spdx.json
+          retention-days: 14
